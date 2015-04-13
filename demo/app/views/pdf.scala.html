@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+        <title>OpenBCI</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <style type="text/css">
+            body {
+                background-color: black;
+            }
+            .footer {
+                display:block;
+                position:absolute;
+                bottom:0;
+                width: 100%;
+                font-size: 22px;
+                text-align: center;
+                color:white;
+            }
+            .invisible {
+                display:none;
+            }
+            .openbci {
+                display: block;
+                position: fixed;
+                z-index: 2000;
+                top: 0px;
+                left: 0px;
+                color: #cacaca ;
+            }
+            .pdfcanvas {
+                display: block;
+                position: fixed;
+                right: 0px;   
+                top: 0px; 
+            }
+            .btn {
+                -webkit-appearance: none;
+                -webkit-user-select: none;
+                -webkit-writing-mode: horizontal-tb;
+                align-items: flex-start;
+                background-color: rgb(255, 255, 255);
+                background-image: none;
+                border-bottom-color: rgb(204, 204, 204);
+                border-bottom-left-radius: 0px;
+                border-bottom-right-radius: 0px;
+                border-bottom-style: solid;
+                border-bottom-width: 1px;
+                border-image-outset: 0px;
+                border-image-repeat: stretch;
+                border-image-slice: 100%;
+                border-image-source: none;
+                border-image-width: 1;
+                border-left-color: rgb(204, 204, 204);
+                border-left-style: solid;
+                border-left-width: 1px;
+                border-right-color: rgb(204, 204, 204);
+                border-right-style: solid;
+                border-right-width: 1px;
+                border-top-color: rgb(204, 204, 204);
+                border-top-left-radius: 0px;
+                border-top-right-radius: 0px;
+                border-top-style: solid;
+                border-top-width: 1px;
+                box-sizing: border-box;
+                color: rgb(51, 51, 51);
+                cursor: pointer;
+                display: block;
+                float: left;
+                font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+                font-size: 12px;
+                font-stretch: normal;
+                font-style: normal;
+                font-variant: normal;
+                font-weight: normal;
+                height: 22px;
+                letter-spacing: normal;
+                line-height: 18px;
+                margin-bottom: 0px;
+                margin-left: -1px;
+                margin-right: 0px;
+                margin-top: 0px;
+                overflow-x: visible;
+                overflow-y: visible;
+                padding-bottom: 1px;
+                padding-left: 5px;
+                padding-right: 5px;
+                padding-top: 1px;
+                position: relative;
+                text-align: center;
+                text-indent: 0px;
+                text-rendering: auto;
+                text-shadow: none;
+                text-transform: none;
+                touch-action: manipulation;
+                vertical-align: middle;
+                white-space: nowrap;
+                width: auto;
+                word-spacing: 0px;
+                writing-mode: lr-tb;
+            }
+            .spkline {
+                display: inline;
+            }
+            .spklinelabel {
+                width: 50px;
+            }
+            .label-default {
+                background-color: rgb(119, 119, 119);
+                border-bottom-left-radius: 2.625px;
+                border-bottom-right-radius: 2.625px;
+                border-top-left-radius: 2.625px;
+                border-top-right-radius: 2.625px;
+                box-sizing: border-box;
+                color: rgb(255, 255, 255);
+                display: inline;
+                font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+                font-size: 10.5px;
+                font-weight: bold;
+                height: auto;
+                line-height: 10.5px;
+                padding-bottom: 3.15000009536743px;
+                padding-left: 6.30000019073486px;
+                padding-right: 6.30000019073486px;
+                padding-top: 2.09999990463257px;
+                text-align: center;
+                vertical-align: baseline;
+                white-space: nowrap;
+                width: auto;
+            }
+            .label-danger {
+                background-color: rgb(217, 83, 79);
+                border-bottom-left-radius: 2.625px;
+                border-bottom-right-radius: 2.625px;
+                border-top-left-radius: 2.625px;
+                border-top-right-radius: 2.625px;
+                box-sizing: border-box;
+                color: rgb(255, 255, 255);
+                display: inline;
+                font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+                font-size: 10.5px;
+                font-weight: bold;
+                height: auto;
+                line-height: 10.5px;
+                padding-bottom: 3.15000009536743px;
+                padding-left: 6.30000019073486px;
+                padding-right: 6.30000019073486px;
+                padding-top: 2.09999990463257px;
+                text-align: center;
+                vertical-align: baseline;
+                white-space: nowrap;
+                width: auto;
+            }
+        </style>
+    </head>
+
+    <body>
+        <form class="openbci">
+            <div style="padding: 10px">
+                <button type="button" class="btn" id="live">Live</button>
+                <button type="button" class="btn" id="start">Playback</button>
+                <button type="button" class="btn" id="stop">Stop</button>
+                <button type="button" class="btn" id="pause">Unpause</button>
+                <button type="button" class="btn" id="prev"><<</button>
+                <button type="button" class="btn" id="next">>></button>
+            </div>
+            <div style="margin-top: 30px">
+                <div id="sparklines"></div>
+            </div>
+        </form>
+
+        <div>
+          <canvas id="the-canvas" style="border:1px solid black;" class="pdfcanvas"></canvas>
+        </div>
+
+        <script src="@routes.Assets.at("javascripts/jquery.js")" type="text/javascript" charset="utf-8"></script>
+        <script src="@routes.Assets.at("javascripts/underscore.js")" type="text/javascript" charset="utf-8"></script>
+        <script src="@routes.Assets.at("javascripts/highcharts.js")" type="text/javascript" charset="utf-8"></script>
+        <script src="@routes.Assets.at("javascripts/sparkline.js")" type="text/javascript" charset="utf-8"></script>
+        <script src="@routes.Assets.at("javascripts/stream.js")" type="text/javascript" charset="utf-8"></script>
+        <script src="@routes.Assets.at("javascripts/pdf.js")" type="text/javascript" charset="utf-8"></script>
+        <script>
+
+            var url = '@routes.Assets.at("OpenBCI.pdf")';
+
+            var pdfDoc = null,
+                  pageNum = 1,
+                  pageRendering = false,
+                  pageNumPending = null,
+                  scale = 0.6,
+                  canvas = document.getElementById('the-canvas'),
+                  ctx = canvas.getContext('2d');
+
+              function renderPage(num) {
+                pageRendering = true;
+                // Using promise to fetch the page
+                pdfDoc.getPage(num).then(function(page) {
+                  var viewport = page.getViewport(scale);
+                  canvas.height = viewport.height;
+                  canvas.width = viewport.width;
+
+                  // Render PDF page into canvas context
+                  var renderContext = {
+                    canvasContext: ctx,
+                    viewport: viewport
+                  };
+                  var renderTask = page.render(renderContext);
+
+                  // Wait for rendering to finish
+                  renderTask.promise.then(function () {
+                    pageRendering = false;
+                    if (pageNumPending !== null) {
+                      // New page rendering is pending
+                      renderPage(pageNumPending);
+                      pageNumPending = null;
+                    }
+                  });
+                });
+              }
+
+              function queueRenderPage(num) {
+                if (pageRendering) {
+                  pageNumPending = num;
+                } else {
+                  renderPage(num);
+                }
+              }
+
+              function onPrevPage() {
+                if (pageNum <= 1) {
+                  return;
+                }
+                pageNum--;
+                queueRenderPage(pageNum);
+              }
+              document.getElementById('prev').addEventListener('click', onPrevPage);
+
+              function onNextPage() {
+                if (pageNum >= pdfDoc.numPages) {
+                  return;
+                }
+                pageNum++;
+                queueRenderPage(pageNum);
+              }
+              document.getElementById('next').addEventListener('click', onNextPage);
+
+              PDFJS.getDocument(url).then(function (pdfDoc_) {
+                pdfDoc = pdfDoc_;
+                renderPage(pageNum);
+              });
+
+              window.Reveal = {
+                prev: onPrevPage,
+                next: onNextPage
+              };
+        </script>
+    </body>
+</html>
